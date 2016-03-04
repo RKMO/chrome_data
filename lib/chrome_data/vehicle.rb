@@ -2,14 +2,14 @@ module ChromeData
   class Vehicle < BaseRequest
     class Engine < Struct.new(:engine_type, :installed_cause, :fuel_type, :cylinders, :displacement); end
 
-    attr_accessor :model_year, :division, :model, :styles, :engines, :standard, :trim_name, :body_type, :driving_wheels
+    attr_accessor :model_year, :division, :model, :styles, :engines, :standard, :trim_name, :body_type, :driving_wheels, :response
 
     def self.request_name
       "describeVehicle"
     end
 
     def self.find_by_vin(vin)
-      request 'vin' => vin, 'switch' => 'IncludeDefinitions'
+      request 'vin' => vin, 'switch' => ['IncludeDefinitions', 'ShowExtendedDescriptions', 'ShowConsumerInformation']
     end
 
     def self.parse_response(response)
@@ -32,6 +32,7 @@ module ChromeData
       parse_standard response
       parse_engines response
       parse_generic_equipment response
+      @response = response
     end
 
     def parse_styles(response)
