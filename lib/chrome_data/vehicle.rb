@@ -2,7 +2,7 @@ module ChromeData
   class Vehicle < BaseRequest
     class Engine < Struct.new(:engine_type, :installed_cause, :fuel_type, :cylinders, :displacement); end
 
-    attr_accessor :model_year, :division, :model, :styles, :engines, :standard, :trim_name, :body_type, :driving_wheels, :response
+    attr_accessor :model_year, :division, :model, :styles, :engines, :standard, :generic_equipment, :trim_name, :body_type, :driving_wheels, :response
 
     def self.request_name
       "describeVehicle"
@@ -80,7 +80,8 @@ module ChromeData
         name: element.attr('name'),
         trim: element.attr('trim'),
         name_without_trim: element.attr('nameWoTrim'),
-        body_types: collect_body_types(element, response)
+        body_types: collect_body_types(element, response),
+        stock_image: find_stock_image(element)
       )
     end
 
@@ -126,6 +127,12 @@ module ChromeData
       definition = find(element,"definition")
       if category = find(definition,"category")
         category.text
+      end
+    end
+
+    def find_stock_image(element)
+      if stock_image = find(element, 'stockImage')
+        stock_image.attr('url')
       end
     end
 
